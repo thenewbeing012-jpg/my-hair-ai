@@ -7,17 +7,14 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   const { face, styles, life, note } = req.body;
-
-  const prompt = `당신은 전문 헤어스타일리스트 AI입니다.
-
-고객 정보:
-- 얼굴형: ${face || '모름'}
-- 관심 스타일: ${styles?.join(', ') || '없음'}
-- 라이프스타일: ${life || '없음'}
-- 추가 요청: ${note || '없음'}
-
-아래 JSON 형식으로만 응답하세요. 마크다운 없이 순수 JSON만:
-{"face_tip":"얼굴형에 대한 한 줄 팁","top_styles":[{"name":"스타일명","reason":"추천 이유 한 문장"},{"name":"스타일명","reason":"추천 이유 한 문장"},{"name":"스타일명","reason":"추천 이유 한 문장"}],"caution":"주의할 점 한 문장","memo":"미용사에게 전달할 자연스러운 메모 2~3문장"}`;
+  const prompt = `당신은 전문 헤어스타일리스트 AI입니다. 다음 정보를 바탕으로 최적의 헤어스타일을 추천하세요:
+  - 얼굴형: ${face || '모름'}
+  - 스타일: ${styles?.join(', ') || '없음'}
+  - 라이프스타일: ${life || '없음'}
+  - 참고사항: ${note || '없음'}
+  
+  반드시 다음 구조의 JSON으로만 응답하세요:
+  {"face_tip":"...","top_styles":[{"name":"...","reason":"..."}],"caution":"...","memo":"..."}`;
 
   try {
     const apiKey = process.env.GEMINI_API_KEY;
@@ -27,19 +24,24 @@ export default async function handler(req, res) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }]
+        contents: [{ parts: [{ text: prompt }] }],
+        // 이 설정이 JSON 에러를 근본적으로 막아줍니다
+        generationConfig: {
+          response_mime_type: "application/json"
+        }
       })
     });
 
     const data = await response.json();
     const text = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
-
+    
     let parsed;
     try {
       parsed = JSON.parse(text);
-    } catch {
+    } catch (e) {
+      // 보조 파싱 로직
       const match = text.match(/\{[\s\S]*\}/);
-      parsed = match ? JSON.parse(match[0]) : { error: '파싱 실패' };
+      parsed = match ? JSON.parse(match[0]) : { error: '파싱 실패', raw: text };
     }
 
     res.status(200).json(parsed);
