@@ -20,22 +20,19 @@ export default async function handler(req, res) {
 {"face_tip":"얼굴형에 대한 한 줄 팁","top_styles":[{"name":"스타일명","reason":"추천 이유 한 문장"},{"name":"스타일명","reason":"추천 이유 한 문장"},{"name":"스타일명","reason":"추천 이유 한 문장"}],"caution":"주의할 점 한 문장","memo":"미용사에게 전달할 자연스러운 메모 2~3문장"}`;
 
   try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    const apiKey = process.env.GEMINI_API_KEY;
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+
+    const response = await fetch(url, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': process.env.ANTHROPIC_API_KEY,
-        'anthropic-version': '2023-06-01'
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        messages: [{ role: 'user', content: prompt }]
+        contents: [{ parts: [{ text: prompt }] }]
       })
     });
 
     const data = await response.json();
-    const text = (data.content || []).map(i => i.text || '').join('').trim();
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
 
     let parsed;
     try {
