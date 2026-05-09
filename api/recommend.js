@@ -1,5 +1,4 @@
 export default async function handler(req, res) {
-  // CORS 헤더 설정
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -7,45 +6,44 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
+  const { face, styles, life, note } = req.body;
+
+  const prompt = `당신은 전문 헤어스타일리스트 AI입니다.
+
+고객 정보:
+- 얼굴형: ${face || '모름'}
+- 관심 스타일: ${styles?.join(', ') || '없음'}
+- 라이프스타일: ${life || '없음'}
+- 추가 요청: ${note || '없음'}
+
+아래 JSON 형식으로만 응답하세요. 마크다운 없이 순수 JSON만:
+{"face_tip":"얼굴형에 대한 한 줄 팁","top_styles":[{"name":"스타일명","reason":"추천 이유 한 문장"},{"name":"스타일명","reason":"추천 이유 한 문장"},{"name":"스타일명","reason":"추천 이유 한 문장"}],"caution":"주의할 점 한 문장","memo":"미용사에게 전달할 자연스러운 메모 2~3문장"}`;
+
   try {
-    const { face, styles, life, note } = req.body;
     const apiKey = process.env.GEMINI_API_KEY;
-
-    // API 키 확인 (없으면 여기서 500 에러 발생)
-    if (!apiKey) {
-      console.error("Error: GEMINI_API_KEY is missing in Environment Variables.");
-      return res.status(500).json({ error: "서버 설정 오류: API 키가 없습니다." });
-    }
-
-    const prompt = `당신은 전문 헤어스타일리스트 AI입니다. 다음 정보를 바탕으로 최적의 헤어스타일을 추천하세요:
-    얼굴형: ${face || '모름'}, 스타일: ${styles?.join(', ') || '없음'}, 라이프스타일: ${life || '없음'}, 참고: ${note || '없음'}
-    
-    반드시 다음 구조의 JSON으로만 응답하세요:
-    {"face_tip":"...","top_styles":[{"name":"...","reason":"..."}],"caution":"...","memo":"..."}`;
-
-    const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
 
     const response = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: { response_mime_type: "application/json" }
+        contents: [{ parts: [{ text: prompt }] }]
       })
     });
 
     const data = await response.json();
-    
-    if (!response.ok) {
-      console.error("Gemini API Response Error:", data);
-      return res.status(response.status).json({ error: "AI 서비스 응답 실패" });
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
+
+    let parsed;
+    try {
+      parsed = JSON.parse(text);
+    } catch {
+      const match = text.match(/\{[\s\S]*\}/);
+      parsed = match ? JSON.parse(match[0]) : { error: '파싱 실패' };
     }
 
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '{}';
-    res.status(200).json(JSON.parse(text));
-
+    res.status(200).json(parsed);
   } catch (err) {
-    console.error("Server Runtime Error:", err.message);
-    res.status(500).json({ error: "서버 내부 오류: " + err.message });
+    res.status(500).json({ error: err.message });
   }
 }
