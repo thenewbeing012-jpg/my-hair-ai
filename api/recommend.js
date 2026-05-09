@@ -27,19 +27,32 @@ export default async function handler(req, res) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }]
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: { responseMimeType: 'application/json' }
       })
     });
 
     const data = await response.json();
+
+    // API 오류 응답 처리
+    if (data.error) throw new Error(data.error.message);
+
     const text = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
+    if (!text) throw new Error('Gemini 응답이 비어있어요');
 
     let parsed;
     try {
       parsed = JSON.parse(text);
     } catch {
-      const match = text.match(/\{[\s\S]*\}/);
-      parsed = match ? JSON.parse(match[0]) : { error: '파싱 실패' };
+      // 마크다운 코드블록 제거 후 재시도
+      const cleaned = text.replace(/```json|```/g, '').trim();
+      try {
+        parsed = JSON.parse(cleaned);
+      } catch {
+        const match = cleaned.match(/\{[\s\S]*\}/);
+        if (match) parsed = JSON.parse(match[0]);
+        else throw new Error('JSON 파싱 실패: ' + text.slice(0, 200));
+      }
     }
 
     res.status(200).json(parsed);
