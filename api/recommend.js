@@ -13,7 +13,7 @@ export default async function handler(req, res) {
   - 라이프스타일: ${life || '없음'}
   - 참고사항: ${note || '없음'}
   
-  반드시 다음 구조의 JSON으로만 응답하세요:
+  반드시 다음 구조의 JSON으로만 응답하세요. 인사말이나 마크다운 기호 없이 오직 JSON만 출력하세요:
   {"face_tip":"...","top_styles":[{"name":"...","reason":"..."}],"caution":"...","memo":"..."}`;
 
   try {
@@ -25,7 +25,6 @@ export default async function handler(req, res) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         contents: [{ parts: [{ text: prompt }] }],
-        // 이 설정이 JSON 에러를 근본적으로 막아줍니다
         generationConfig: {
           response_mime_type: "application/json"
         }
@@ -33,19 +32,26 @@ export default async function handler(req, res) {
     });
 
     const data = await response.json();
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
+    // 안전하게 텍스트 추출
+    let rawText = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
     
     let parsed;
     try {
-      parsed = JSON.parse(text);
+      // 1. 깨끗한 JSON 파싱 시도
+      parsed = JSON.parse(rawText);
     } catch (e) {
-      // 보조 파싱 로직
-      const match = text.match(/\{[\s\S]*\}/);
-      parsed = match ? JSON.parse(match[0]) : { error: '파싱 실패', raw: text };
+      // 2. 실패 시 중괄호 추출 시도
+      const match = rawText.match(/\{[\s\S]*\}/);
+      if (match) {
+        parsed = JSON.parse(match[0]);
+      } else {
+        throw new Error("유효한 응답 형식이 아닙니다.");
+      }
     }
 
     res.status(200).json(parsed);
   } catch (err) {
+    console.error("Server Error:", err);
     res.status(500).json({ error: err.message });
   }
 }
