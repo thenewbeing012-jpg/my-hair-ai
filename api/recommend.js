@@ -20,31 +20,30 @@ export default async function handler(req, res) {
 {"face_tip":"얼굴형에 대한 한 줄 팁","top_styles":[{"name":"스타일명","reason":"추천 이유 한 문장"},{"name":"스타일명","reason":"추천 이유 한 문장"},{"name":"스타일명","reason":"추천 이유 한 문장"}],"caution":"주의할 점 한 문장","memo":"미용사에게 전달할 자연스러운 메모 2~3문장"}`;
 
   try {
-    const apiKey = process.env.GEMINI_API_KEY;
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent?key=${apiKey}`;
-
-    const response = await fetch(url, {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': process.env.ANTHROPIC_API_KEY,
+        'anthropic-version': '2023-06-01'
+      },
       body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: { responseMimeType: 'application/json' }
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{ role: 'user', content: prompt }]
       })
     });
 
     const data = await response.json();
-
-    // API 오류 응답 처리
     if (data.error) throw new Error(data.error.message);
 
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
-    if (!text) throw new Error('Gemini 응답이 비어있어요');
+    const text = (data.content || []).map(i => i.text || '').join('').trim();
+    if (!text) throw new Error('응답이 비어있어요');
 
     let parsed;
     try {
       parsed = JSON.parse(text);
     } catch {
-      // 마크다운 코드블록 제거 후 재시도
       const cleaned = text.replace(/```json|```/g, '').trim();
       try {
         parsed = JSON.parse(cleaned);
