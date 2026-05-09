@@ -4,20 +4,19 @@ export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
   if (req.method === 'OPTIONS') return res.status(200).end();
-  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
-
-  const { face, styles, life, note } = req.body;
-  const prompt = `당신은 전문 헤어스타일리스트 AI입니다. 다음 정보를 바탕으로 최적의 헤어스타일을 추천하세요:
-  - 얼굴형: ${face || '모름'}
-  - 스타일: ${styles?.join(', ') || '없음'}
-  - 라이프스타일: ${life || '없음'}
-  - 참고사항: ${note || '없음'}
   
-  반드시 다음 구조의 JSON으로만 응답하세요. 인사말이나 마크다운 기호 없이 오직 JSON만 출력하세요:
-  {"face_tip":"...","top_styles":[{"name":"...","reason":"..."}],"caution":"...","memo":"..."}`;
-
   try {
+    const { face, styles, life, note } = req.body;
     const apiKey = process.env.GEMINI_API_KEY;
+
+    if (!apiKey) {
+      return res.status(500).json({ error: "API 키가 설정되지 않았습니다. Vercel 설정을 확인하세요." });
+    }
+
+    const prompt = `당신은 전문 헤어스타일리스트 AI입니다. 다음 구조의 JSON으로만 응답하세요:
+    {"face_tip":"...","top_styles":[{"name":"...","reason":"..."}],"caution":"...","memo":"..."}
+    사용자 정보: 얼굴형 ${face}, 선호스타일 ${styles?.join(', ')}, 라이프스타일 ${life}, 메모 ${note}`;
+
     const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
 
     const response = await fetch(url, {
@@ -25,33 +24,22 @@ export default async function handler(req, res) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: {
-          response_mime_type: "application/json"
-        }
+        generationConfig: { response_mime_type: "application/json" }
       })
     });
 
     const data = await response.json();
-    // 안전하게 텍스트 추출
-    let rawText = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
     
-    let parsed;
-    try {
-      // 1. 깨끗한 JSON 파싱 시도
-      parsed = JSON.parse(rawText);
-    } catch (e) {
-      // 2. 실패 시 중괄호 추출 시도
-      const match = rawText.match(/\{[\s\S]*\}/);
-      if (match) {
-        parsed = JSON.parse(match[0]);
-      } else {
-        throw new Error("유효한 응답 형식이 아닙니다.");
-      }
+    if (!response.ok) {
+      console.error("Gemini API Error:", data);
+      return res.status(response.status).json({ error: "AI 서비스 응답 오류" });
     }
 
-    res.status(200).json(parsed);
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '{}';
+    res.status(200).json(JSON.parse(text));
+
   } catch (err) {
-    console.error("Server Error:", err);
-    res.status(500).json({ error: err.message });
+    console.error("Server Error:", err.message);
+    res.status(500).json({ error: "서버 내부 오류: " + err.message });
   }
 }
