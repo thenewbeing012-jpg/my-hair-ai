@@ -9,16 +9,15 @@
   body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f7f7f5;color:#1a1a1a;min-height:100vh}
   .header{background:#fff;border-bottom:1px solid #e8e8e4;padding:16px 24px;display:flex;align-items:center;gap:10px}
   .header h1{font-size:17px;font-weight:600}
-  .header span{font-size:13px;color:#888;background:#f0effe;color:#6b5ce7;padding:3px 10px;border-radius:12px}
-  .container{max-width:900px;margin:0 auto;padding:24px 16px;display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  .header span{font-size:13px;background:#f0effe;color:#6b5ce7;padding:3px 10px;border-radius:12px}
+  .container{max-width:960px;margin:0 auto;padding:24px 16px;display:grid;grid-template-columns:1fr 1fr;gap:20px}
   @media(max-width:640px){.container{grid-template-columns:1fr}}
   .card{background:#fff;border-radius:16px;border:1px solid #e8e8e4;padding:20px}
   .section-label{font-size:11px;font-weight:600;color:#aaa;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:8px}
-  .upload-zone{border:1.5px dashed #d0d0c8;border-radius:12px;padding:24px;text-align:center;cursor:pointer;background:#fafaf8;transition:background 0.2s;margin-bottom:16px}
+  .upload-zone{border:1.5px dashed #d0d0c8;border-radius:12px;padding:20px;text-align:center;cursor:pointer;background:#fafaf8;transition:background 0.2s;margin-bottom:16px}
   .upload-zone:hover{background:#f0effe}
   .upload-zone p{font-size:13px;color:#888;margin-top:6px}
-  .upload-zone .icon{font-size:28px}
-  #previewImg{width:100%;border-radius:10px;max-height:160px;object-fit:cover;display:none;margin-bottom:4px}
+  #previewImg{width:100%;border-radius:10px;max-height:150px;object-fit:cover;display:none;margin-bottom:4px}
   .chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
   .chip{padding:7px 14px;border-radius:20px;border:1px solid #e0e0d8;font-size:13px;cursor:pointer;background:#fff;color:#666;transition:all 0.15s;user-select:none}
   .chip:hover{border-color:#a89cf7}
@@ -29,14 +28,20 @@
   .btn:hover{background:#5648c4}
   .btn:disabled{background:#b0a8f0;cursor:not-allowed}
   .result-empty{display:flex;align-items:center;justify-content:center;min-height:300px;color:#bbb;font-size:14px;text-align:center;line-height:1.7}
-  .face-tag{display:inline-block;font-size:12px;padding:4px 12px;border-radius:12px;background:#e6f7f0;color:#1a7a52;margin-bottom:12px}
-  .face-tip{font-size:13px;color:#666;margin-bottom:16px;line-height:1.6}
-  .rec-item{display:flex;gap:10px;margin-bottom:12px;align-items:flex-start}
-  .rec-num{min-width:24px;height:24px;border-radius:50%;background:#f0effe;color:#4b3db5;font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
-  .rec-name{font-size:14px;font-weight:500;color:#1a1a1a;margin-bottom:2px}
-  .rec-reason{font-size:13px;color:#666}
+  .face-tag{display:inline-block;font-size:12px;padding:4px 12px;border-radius:12px;background:#e6f7f0;color:#1a7a52;margin-bottom:8px}
+  .face-tip{font-size:13px;color:#666;margin-bottom:14px;line-height:1.6}
+  .rec-card{border:1px solid #e8e8e4;border-radius:12px;overflow:hidden;margin-bottom:12px}
+  .rec-img-wrap{width:100%;height:160px;background:#f0f0ec;overflow:hidden;position:relative}
+  .rec-img-wrap img{width:100%;height:100%;object-fit:cover}
+  .rec-img-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:36px;background:linear-gradient(135deg,#f0effe,#e8e4ff)}
+  .rec-body{padding:12px}
+  .rec-header{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+  .rec-num{min-width:22px;height:22px;border-radius:50%;background:#f0effe;color:#4b3db5;font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .rec-name{font-size:14px;font-weight:600;color:#1a1a1a}
+  .rec-reason{font-size:13px;color:#666;line-height:1.5}
+  .rec-search{display:inline-block;margin-top:8px;font-size:12px;color:#6b5ce7;text-decoration:none;border:1px solid #c4bcf5;padding:4px 10px;border-radius:8px}
+  .rec-search:hover{background:#f0effe}
   .caution-box{background:#fdf8e8;border-radius:10px;padding:12px;margin:12px 0;font-size:13px;color:#7a6010}
-  .caution-box .label{font-size:11px;font-weight:600;color:#b8900a;margin-bottom:4px}
   .memo-box{background:#f0effe;border-radius:10px;padding:14px;margin-top:4px}
   .memo-box p{font-size:13px;color:#3c2f9e;line-height:1.7}
   .copy-btn{width:100%;padding:10px;background:#fff;color:#6b5ce7;border:1px solid #c4bcf5;border-radius:10px;font-size:13px;cursor:pointer;margin-top:10px;font-weight:500}
@@ -46,6 +51,7 @@
   @keyframes spin{to{transform:rotate(360deg)}}
   .error-box{background:#fef0f0;border-radius:10px;padding:12px;font-size:13px;color:#c0392b;margin-top:10px}
   .divider{border:none;border-top:1px solid #f0f0ec;margin:14px 0}
+  .result-scroll{overflow-y:auto;max-height:600px}
 </style>
 </head>
 <body>
@@ -57,11 +63,10 @@
 
 <div class="container">
   <div class="card">
-
     <p class="section-label">Step 1 — 사진 업로드 (선택)</p>
     <div class="upload-zone" onclick="document.getElementById('fi').click()">
       <div id="uploadContent">
-        <div class="icon">📷</div>
+        <div style="font-size:28px">📷</div>
         <p>정면 얼굴 사진을 올려주세요<br><span style="font-size:11px;color:#bbb">없어도 진행 가능해요</span></p>
       </div>
       <img id="previewImg"/>
@@ -80,16 +85,16 @@
 
     <p class="section-label">Step 3 — 원하는 스타일</p>
     <div class="chips" id="styleChips">
-      <span class="chip" onclick="toggleChip(this,'style')">단발</span>
-      <span class="chip" onclick="toggleChip(this,'style')">레이어드</span>
-      <span class="chip" onclick="toggleChip(this,'style')">웨이브</span>
-      <span class="chip" onclick="toggleChip(this,'style')">C컬</span>
-      <span class="chip" onclick="toggleChip(this,'style')">숏컷</span>
-      <span class="chip" onclick="toggleChip(this,'style')">울프컷</span>
-      <span class="chip" onclick="toggleChip(this,'style')">히피펌</span>
-      <span class="chip" onclick="toggleChip(this,'style')">볼륨펌</span>
-      <span class="chip" onclick="toggleChip(this,'style')">긴머리</span>
-      <span class="chip" onclick="toggleChip(this,'style')">뱅헤어</span>
+      <span class="chip" onclick="toggleChip(this)">단발</span>
+      <span class="chip" onclick="toggleChip(this)">레이어드</span>
+      <span class="chip" onclick="toggleChip(this)">웨이브</span>
+      <span class="chip" onclick="toggleChip(this)">C컬</span>
+      <span class="chip" onclick="toggleChip(this)">숏컷</span>
+      <span class="chip" onclick="toggleChip(this)">울프컷</span>
+      <span class="chip" onclick="toggleChip(this)">히피펌</span>
+      <span class="chip" onclick="toggleChip(this)">볼륨펌</span>
+      <span class="chip" onclick="toggleChip(this)">긴머리</span>
+      <span class="chip" onclick="toggleChip(this)">뱅헤어</span>
     </div>
 
     <p class="section-label">Step 4 — 라이프스타일</p>
@@ -105,21 +110,36 @@
 
     <button class="btn" onclick="analyze()" id="analyzeBtn">✨ AI 추천 받기</button>
     <div id="errorBox" style="display:none"></div>
-
   </div>
 
   <div class="card" id="resultCard">
-    <div class="result-empty" id="resultEmpty">
+    <div class="result-empty">
       얼굴형이나 스타일을 선택하고<br>추천을 받아보세요 💇
     </div>
-    <div id="resultContent" style="display:none"></div>
   </div>
 </div>
 
 <script>
-let face = null;
-let styles = [];
-let life = null;
+// 스타일별 참고 이미지 (Unsplash 무료 이미지)
+const STYLE_IMAGES = {
+  '단발':    'https://images.unsplash.com/photo-1560869713-7d0a29430803?w=400&q=80',
+  '레이어드': 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=400&q=80',
+  '웨이브':  'https://images.unsplash.com/photo-1519699047748-de8e457a634e?w=400&q=80',
+  'C컬':    'https://images.unsplash.com/photo-1595956553066-fe24a8c33395?w=400&q=80',
+  '숏컷':   'https://images.unsplash.com/photo-1595516782940-56c16f4de26a?w=400&q=80',
+  '울프컷':  'https://images.unsplash.com/photo-1580618672591-eb180b1a973f?w=400&q=80',
+  '히피펌':  'https://images.unsplash.com/photo-1502823403499-6ccfcf4fb453?w=400&q=80',
+  '볼륨펌':  'https://images.unsplash.com/photo-1526045612212-70caf35c14df?w=400&q=80',
+  '긴머리':  'https://images.unsplash.com/photo-1562572159-4efd90232d2a?w=400&q=80',
+  '뱅헤어':  'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=400&q=80',
+};
+
+const STYLE_EMOJI = {
+  '단발':'💇','레이어드':'✂️','웨이브':'🌊','C컬':'💫','숏컷':'⚡',
+  '울프컷':'🐺','히피펌':'🌿','볼륨펌':'✨','긴머리':'🌸','뱅헤어':'🎀'
+};
+
+let face = null, styles = [], life = null;
 
 document.getElementById('fi').addEventListener('change', function(e){
   const file = e.target.files[0];
@@ -146,12 +166,10 @@ function selectLife(el){
   life = el.textContent.trim();
 }
 
-function toggleChip(el, type){
+function toggleChip(el){
   el.classList.toggle('on');
   const val = el.textContent.trim();
-  if(type === 'style'){
-    styles = el.classList.contains('on') ? [...styles, val] : styles.filter(s => s !== val);
-  }
+  styles = el.classList.contains('on') ? [...styles, val] : styles.filter(s => s !== val);
 }
 
 async function analyze(){
@@ -160,13 +178,10 @@ async function analyze(){
     return;
   }
   document.getElementById('errorBox').style.display = 'none';
-
   const btn = document.getElementById('analyzeBtn');
   btn.disabled = true;
   btn.textContent = '분석 중...';
 
-  document.getElementById('resultEmpty').style.display = 'none';
-  document.getElementById('resultContent').style.display = 'none';
   document.getElementById('resultCard').innerHTML = `
     <div class="loading">
       <div class="spinner"></div>
@@ -188,7 +203,6 @@ async function analyze(){
     if(!resp.ok) throw new Error(`서버 오류 (${resp.status})`);
     const data = await resp.json();
     if(data.error) throw new Error(data.error);
-
     renderResult(data);
   } catch(err){
     document.getElementById('resultCard').innerHTML = `
@@ -201,34 +215,44 @@ async function analyze(){
 }
 
 function renderResult(d){
-  const stylesHtml = (d.top_styles || []).map((s,i) => `
-    <div class="rec-item">
-      <span class="rec-num">${i+1}</span>
-      <div>
-        <div class="rec-name">${s.name}</div>
-        <div class="rec-reason">${s.reason}</div>
-      </div>
-    </div>
-  `).join('');
+  const stylesHtml = (d.top_styles || []).map((s, i) => {
+    const imgUrl = STYLE_IMAGES[s.name];
+    const emoji = STYLE_EMOJI[s.name] || '💇';
+    const searchQuery = encodeURIComponent(s.name + ' 헤어스타일');
+    const imgHtml = imgUrl
+      ? `<img src="${imgUrl}" alt="${s.name} 헤어스타일 참고 이미지" onerror="this.parentNode.innerHTML='<div class=rec-img-placeholder>${emoji}</div>'">`
+      : `<div class="rec-img-placeholder">${emoji}</div>`;
+
+    return `
+      <div class="rec-card">
+        <div class="rec-img-wrap">${imgHtml}</div>
+        <div class="rec-body">
+          <div class="rec-header">
+            <span class="rec-num">${i+1}</span>
+            <span class="rec-name">${s.name}</span>
+          </div>
+          <p class="rec-reason">${s.reason}</p>
+          <a class="rec-search" href="https://www.google.com/search?q=${searchQuery}&tbm=isch" target="_blank" rel="noopener">🔍 더 많은 사진 보기</a>
+        </div>
+      </div>`;
+  }).join('');
 
   document.getElementById('resultCard').innerHTML = `
-    <p class="section-label">분석 결과</p>
-    ${face ? `<span class="face-tag">${face}</span>` : ''}
-    ${d.face_tip ? `<p class="face-tip">${d.face_tip}</p>` : ''}
-    <hr class="divider"/>
-    <p class="section-label">추천 스타일 TOP 3</p>
-    ${stylesHtml}
-    <div class="caution-box">
-      <div class="label">⚠️ 주의사항</div>
-      ${d.caution || ''}
-    </div>
-    <hr class="divider"/>
-    <p class="section-label">미용사에게 전달할 메모</p>
-    <div class="memo-box">
-      <p id="memoText">${d.memo || ''}</p>
-    </div>
-    <button class="copy-btn" onclick="copyMemo()">📋 메모 복사하기</button>
-  `;
+    <div class="result-scroll">
+      <p class="section-label">분석 결과</p>
+      ${face ? `<span class="face-tag">${face}</span>` : ''}
+      ${d.face_tip ? `<p class="face-tip">${d.face_tip}</p>` : ''}
+      <hr class="divider"/>
+      <p class="section-label">추천 스타일 TOP 3</p>
+      ${stylesHtml}
+      <div class="caution-box">⚠️ ${d.caution || ''}</div>
+      <hr class="divider"/>
+      <p class="section-label">미용사에게 전달할 메모</p>
+      <div class="memo-box">
+        <p id="memoText">${d.memo || ''}</p>
+      </div>
+      <button class="copy-btn" onclick="copyMemo()">📋 메모 복사하기</button>
+    </div>`;
 }
 
 function copyMemo(){
